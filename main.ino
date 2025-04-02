@@ -64,6 +64,17 @@ void setup() {
   Serial.println("System Ready...");
 }
 
+void stopMotors() {
+ // Stop motor 1
+        analogWrite(M1_RPWM, 0); 
+        analogWrite(M1_LPWM, 0);
+
+        // Stop motor 2
+        analogWrite(M2_RPWM, 0); 
+        analogWrite(M2_LPWM, 0);
+
+}
+
 void loop() {
   long duration, cm;
 
@@ -97,16 +108,19 @@ void loop() {
       if (ballDetected) {
         Serial.println("Ball detected! Launching...");
 
-        // Run the motor for 3 seconds
+        // Run motor 1 for 3 seconds
         analogWrite(M1_RPWM, 180);  // Motor forward (adjust speed if needed)
         analogWrite(M1_LPWM, 0);  // Keep the left motor off
+
+        // Run motor 2 for 3 seconds - reverse of motor 1
+        analogWrite(M2_RPWM, 0);
+        analogWrite(M2_LPWM, 180);
+        
         delay(3000);  // Motor runs for 3 sec
 
-        // Stop the motor
-        analogWrite(M1_RPWM, 0);  // Stop motor
-        analogWrite(M1_LPWM, 0);
+        stopMotors();
         
-        // Start the servo to launch the ball
+        // Start the servo to launch the ball - hopper/feeder servo 
         launchServo.write(45);  // Adjust launch angle (45 degrees)
 
         delay(2000);  // Wait for 2 seconds (adjust as necessary)
@@ -121,18 +135,20 @@ void loop() {
       }
     } else {
       Serial.println("Dog detected, not launching.");
-      analogWrite(M1_RPWM, 0);  // Ensure motor stays off
-      analogWrite(M1_LPWM, 0);  // Ensure motor stays off
+      stopMotors();
+
       launchServo.write(90);  // Ensure servo is at initial position
     }
   } else {
     // If rocket switch is not pressed, ensure everything stays off
     Serial.println("Rocket switch not pressed. Motor and servo off.");
-    analogWrite(M1_RPWM, 0);  // Ensure motor stays off
-    analogWrite(M1_LPWM, 0);  // Ensure motor stays off
+
+    stopMotors();
+
     launchServo.write(90);  // Reset servo to horizontal position
   }
 
-  delay(500);  // Small delay before next reading
+  delay(500);  // delay before next reading
 }
+
 
