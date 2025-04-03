@@ -1,4 +1,4 @@
-#include <Servo.h>  // Include Servo library
+#include <Servo.h>
 
 // motor 1 pins
 const int M1_RPWM = 11;  // Right PWM (Forward)
@@ -28,6 +28,11 @@ Servo hoodServo;  // Create Servo object
 
 const int hopperServoPin = 12;
 Servo hopperServo;
+
+// potentiometer pin to control the hood/launch angle
+const int hoodPotPin = A0;
+int hoodPotVal;
+int hoodAngle;
 
 void setup() {
   Serial.begin(9600);  // Start serial communication
@@ -116,6 +121,11 @@ void loop() {
   // Read the ball detection sensor state (IR sensor)
   bool ballDetected = digitalRead(ballDetectPin) == HIGH;  // Ball detected when HIGH
 
+  // adjust hood angle
+  hoodPotVal = analogRead(hoodPotPin);
+  hoodAngle = map(hoodPotVal, 0, 306, 0, 179);
+  delay(15);
+
   // If the rocket switch is pressed, proceed with the next steps
   if (rocketSwitchState) {
     if (cm > triggerDistance) {  // Only check for ball if no dog detected in front of ultrasonic sensor
@@ -127,7 +137,7 @@ void loop() {
         runMotors();
 
         // Start the servo to launch the ball - hopper/feeder servo 
-        hoodServo.write(45);  // Adjust launch angle (45 degrees)
+        // hoodServo.write(45);  // Adjust launch angle (45 degrees)
 
         delay(3000);  // Motor runs for 3 sec
 
