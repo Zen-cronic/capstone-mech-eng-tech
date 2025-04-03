@@ -146,18 +146,18 @@ void loop() {
         delay(2000);  // Wait for 2 seconds (adjust as necessary)
 
         // Reset servo to original position (horizontal)
-        hoodServo.write(90);  // Reset servo to horizontal position
+        // hoodServo.write(90);  // Reset servo to horizontal position
       } else {
         Serial.println("No ball detected. Returning servo to original position.");
         
         // No ball detected, return servo to horizontal position
-        hoodServo.write(90);  // Reset servo to horizontal position
+        // hoodServo.write(90);  // Reset servo to horizontal position
       }
     } else {
       Serial.println("Dog detected, not launching.");
       stopMotors();
 
-      hoodServo.write(90);  // Ensure servo is at initial position
+      // hoodServo.write(90);  // Ensure servo is at initial position
     }
   } else {
     // If rocket switch is not pressed, ensure everything stays off
@@ -165,7 +165,7 @@ void loop() {
 
     stopMotors();
 
-    hoodServo.write(90);  // Reset servo to horizontal position
+    // hoodServo.write(90);  // Reset servo to horizontal position
   }
 
   delay(500);  // delay before next reading
