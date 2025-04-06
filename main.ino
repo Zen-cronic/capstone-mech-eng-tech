@@ -1,32 +1,33 @@
 #include <Servo.h>
 
 // motor 1 pins
-const int M1_RPWM = 11;  // Right PWM (Forward)
-const int M1_LPWM = 12;  // Left PWM (Reverse)
-const int M1_R_EN = 24;  // Right Enable
-const int M1_L_EN = 25;  // Left Enable
+const int M1_RPWM = 2;  // Right PWM (Forward)
+const int M1_LPWM = 3;  // Left PWM (Reverse)
+const int M1_R_EN = A2;  // Right Enable
+const int M1_L_EN = A3;  // Left Enable
 
 // motor 2 pins
-const int M2_RPWM = 3;  // Right PWM (Forward)
-const int M2_LPWM = 4;  // Left PWM (Reverse)
-const int M2_R_EN = 34;  // Right Enable
-const int M2_L_EN = 35;  // Left Enable
+const int M2_RPWM = 4;  // Right PWM (Forward)
+const int M2_LPWM = 5;  // Left PWM (Reverse)
+const int M2_R_EN = A4;  // Right Enable
+const int M2_L_EN = A5;  // Left Enable
 
-const int ultrasonicPin = 40;  // SIG connected to Pin 10
+const int ultrasonicPin = 8;  // SIG connected to Pin 40
+ 
+ // IR sensor
+ const int ballDetectPin = 9;  // Ball detection sensor connected to Pin 42
 
-const int rocketSwitchPin = 44;  // Rocket switch connected to Pin 4
+const int rocketSwitchPin = 6;  // Rocket switch connected to Pin 44
 
-// IR sensor
-const int ballDetectPin = 42;  // Ball detection sensor connected to Pin 3
 
 // Set distance threshold (adjust as needed)
 const int triggerDistance = 35;  // If distance is more than 35 cm, proceed to IR sensor
 
 // Define hood (angle adjustment) servo motor pin
-const int hoodServoPin = 10;  // Servo connected to pin 5
+const int hoodServoPin = 12;  // Servo connected to pin 5
 Servo hoodServo;  // Create Servo object
 
-const int hopperServoPin = 12;
+const int hopperServoPin = 13;
 Servo hopperServo;
 
 // potentiometer pin to control the hood/launch angle
@@ -72,6 +73,8 @@ void setup() {
   hopperServo.write(90);  // block the ball initially
 
   Serial.println("System Ready...");
+
+
 }
 
 void stopMotors() {
@@ -116,7 +119,7 @@ void loop() {
   Serial.println(cm);
 
   // Read the rocket switch state
-  bool rocketSwitchState = digitalRead(rocketSwitchPin) == LOW;  // Active low
+  bool rocketSwitchState = digitalRead(rocketSwitchPin) == HIGH;  // Active low
 
   // Read the ball detection sensor state (IR sensor)
   bool ballDetected = digitalRead(ballDetectPin) == HIGH;  // Ball detected when HIGH
@@ -126,6 +129,19 @@ void loop() {
   hoodAngle = map(hoodPotVal, 0, 306, 0, 179);
   delay(15);
 
+  Serial.println("Hood angle:" );
+  Serial.println(hoodAngle);
+  
+  hoodServo.write(hoodAngle);
+
+  if(ballDetected){
+    Serial.println("Ball detected");
+  }
+  else{
+    Serial.println("Ball NOT detected!");
+    
+  }
+  // hopperServo.write(180);
   // If the rocket switch is pressed, proceed with the next steps
   if (rocketSwitchState) {
     if (cm > triggerDistance) {  // Only check for ball if no dog detected in front of ultrasonic sensor
@@ -134,11 +150,12 @@ void loop() {
       if (ballDetected) {
         Serial.println("Ball detected! Launching...");
 
+        
+        // enable motors after hopper servo code
         runMotors();
 
         // Start the servo to launch the ball - hopper/feeder servo 
-        // hoodServo.write(45);  // Adjust launch angle (45 degrees)
-
+        // hopperServo.write(180); 
         delay(3000);  // Motor runs for 3 sec
 
         stopMotors();
