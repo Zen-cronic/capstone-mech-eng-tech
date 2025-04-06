@@ -70,7 +70,7 @@ void setup() {
 
   // Set initial servo position (adjust angle if necessary)
   hoodServo.write(90);  // 90 degrees (horizontal position)
-  hopperServo.write(90);  // block the ball initially
+  // hopperServo.write(90);  // block the ball initially
 
   Serial.println("System Ready...");
 
